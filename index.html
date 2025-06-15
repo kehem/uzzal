@@ -41,6 +41,16 @@
             line-height: 29px;
         }
         
+        .diary-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin: 0 0 1.5rem 0;
+            display: block;
+            border: 1px solid #e0ddd5;
+        }
+        
         .calendar-day {
             width: 100%;
             aspect-ratio: 1;
@@ -201,6 +211,7 @@
                             <span id="entryDay" class="text-sm text-gray-600">Sunday</span>
                         </div>
                         <div id="diaryContent">
+                            <img src="https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg?w=2210&quality=50" alt="Sketch of mental blueprint" class="diary-image">
                             <p class="mb-4">Dear Diary,</p>
                             <p class="mb-4">Today marks the beginning of this digital journey. I've always believed that our thoughts, when captured authentically, can become the most valuable artifacts of our existence.</p>
                             <p class="mb-4">This space will serve as a repository for my musings, creations, and reflections. A place where the mundane and the profound can coexist, where ideas can breathe and evolve.</p>
@@ -247,12 +258,12 @@
                 <div class="flex space-x-6">
                     <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-twitter"></i></a>
                     <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-[#5e503f] transition"><i class="fab fa-github"></i></a>
                     <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
             <div class="mt-8 text-center text-sm">
-                <p>© 2025 UZZAL SINGHA. Design and Developed by KEHEM IT</p>
+                <p>© 2025 UZZAL SINGHA. Design and Developed by KEHEM IT.</p>
             </div>
         </div>
     </footer>
@@ -361,6 +372,7 @@
             // Simulate different content for different dates
             if (day === 15 && month === 4) {
                 diaryContent.innerHTML = `
+                    <img src="https://via.placeholder.com/400x200?text=Thought+Blueprint" alt="Sketch of mental blueprint" class="diary-image">
                     <p class="mb-4">Dear Diary,</p>
                     <p class="mb-4">Today I found myself contemplating the architecture of thought. How ideas build upon one another, how the mind constructs its own cathedrals from the raw materials of experience and imagination.</p>
                     <p class="mb-4">There's something sacred about this process - the way fragments coalesce into something greater than their parts. I spent the afternoon sketching mental blueprints, tracing the contours of concepts not yet fully formed.</p>
@@ -369,13 +381,18 @@
                 `;
             } else if (day === 22 && month === 3) {
                 diaryContent.innerHTML = `
+                    <img src="https://via.placeholder.com/400x300?text=Midnight+Sketch" alt="Abstract sketch" class="diary-image">
                     <p class="mb-4">Dear Diary,</p>
                     <p class="mb-4">The night was restless, filled with half-formed images that demanded expression. I rose at 2 AM and filled three pages with rapid sketches - the language of my sleepless mind.</p>
                     <p class="mb-4">There's a purity to these midnight creations. Unfiltered by daylight consciousness, they emerge raw and true. Some will become something more; others will remain as they are - artifacts of a particular moment's energy.</p>
-                    <p class="mb-4">I've included one below:</p>
-                    <div class="my-4 p-4 border border-dashed border-gray-400 text-center italic text-gray-600">
-                        [Sketch of abstract shapes merging into a face]
-                    </div>
+                    <p>— Uzzal</p>
+                `;
+            } else if (day === 15 && month === 5 && year === 2025) {
+                diaryContent.innerHTML = `
+                    <img src="https://via.placeholder.com/400x250?text=Sunset+Capture" alt="Sunset photo" class="diary-image">
+                    <p class="mb-4">Dear Diary,</p>
+                    <p class="mb-4">Today, the world felt alive with colors. I captured a moment during my evening walk - the sunset painting the sky in hues of orange and pink.</p>
+                    <p class="mb-4">Moments like these remind me to pause and breathe. The ordinary can be so breathtaking.</p>
                     <p>— Uzzal</p>
                 `;
             } else {
