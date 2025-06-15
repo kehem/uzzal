@@ -7,51 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Source+Serif+4:wght@300;400;600&display=swap');
         
         body {
-            font-family: 'Crimson Pro', serif;
-            background-color: #f8f4e9;
-            color: #333;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f5f6f5;
+            color: #2a2a2a;
         }
         
         .diary-paper {
-            background: 
-                linear-gradient(to bottom, #fffdf8, #fffdf8 28px, #e0ddd5 1px),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend mode="multiply" in2="SourceGraphic"/></filter><rect width="100%" height="100%" fill="#fffdf8" filter="url(%23noise)"/></svg>');
-            background-size: 100% 29px, auto;
-            background-blend-mode: overlay;
+            background: #ffffff;
             position: relative;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 0 10px rgba(0,0,0,0.05);
-            border: 1px solid rgba(200, 180, 150, 0.3);
-        }
-        
-        .diary-paper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 45px;
-            height: 100%;
-            width: 1px;
-            background: rgba(200, 180, 150, 0.5);
+            padding: 2.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
         }
         
         .handwriting {
-            font-family: 'Crimson Pro', serif;
-            line-height: 29px;
-            position: inherit;
-            left:20px;
+            font-family: 'Source Serif 4', serif;
+            line-height: 1.8;
+            color: #333333;
         }
         
         .diary-image {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            margin: 0 0 1.5rem 0;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            margin: 0 0 2rem 0;
             display: block;
-            border: 1px solid #e0ddd5;
         }
         
         .calendar-day {
@@ -61,46 +45,41 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            background-color: #ffffff;
-            border: none;
-            color: #2d2d2d;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 400;
+            background-color: transparent;
+            color: #2a2a2a;
             cursor: pointer;
         }
         
         .calendar-day:hover {
-            background-color: #e5e7eb;
-            transform: scale(1.05);
+            background-color: #e8ecef;
+            border-radius: 4px;
         }
         
         .calendar-day.selected {
-            background-color: #1f2937;
+            background-color: #005f73;
             color: #ffffff;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 4px;
         }
         
         .calendar-header {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             font-weight: 600;
-            color: #1f2937;
-            padding: 10px 0;
-            font-size: 0.75rem;
+            color: #2a2a2a;
+            padding: 8px 0;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background-color: #f3f4f6;
-            border-bottom: none;
+            letter-spacing: 0.1em;
         }
         
         #calendar {
-            border: none;
             background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            padding: 0.5rem;
         }
         
         .calendar-nav {
@@ -108,39 +87,38 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 12px;
-            background-color: #f3f4f6;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1f2937;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2a2a2a;
         }
         
         .calendar-nav button {
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
-            color: #1f2937;
+            padding: 6px 10px;
+            color: #2a2a2a;
             transition: color 0.2s ease;
         }
         
         .calendar-nav button:hover {
-            color: #3b82f6;
+            color: #005f73;
         }
         
         .calendar-nav span {
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 6px 10px;
             transition: background-color 0.2s ease;
         }
         
         .calendar-nav span:hover {
-            background-color: #e5e7eb;
+            background-color: #e8ecef;
             border-radius: 4px;
         }
         
         .fade-in {
-            animation: fadeIn 0.8s ease-in;
+            animation: fadeIn 0.6s ease-in;
         }
         
         @keyframes fadeIn {
@@ -149,26 +127,26 @@
         }
         
         @media (max-width: 768px) {
-            .diary-paper::before {
-                left: 30px;
+            .diary-paper {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Header -->
-    <header class="bg-[#5e503f] text-[#f8f4e9] py-6 shadow-lg">
+    <header class="bg-[#f5f6f5] text-[#2a2a2a] py-6">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <h1 class="text-3xl font-serif font-bold">The Living Diary of Uzzal Singha</h1>
-                    <p class="italic mt-1">Welcome to DeepSite, the personal publishing space of Uzzal Singha</p>
+                    <h1 class="text-2xl font-serif font-light">The Living Diary of Uzzal Singha</h1>
+                    <p class="text-sm mt-1 text-[#4a4a4a]">Welcome to DeepSite, the personal publishing space of Uzzal Singha</p>
                 </div>
                 <div class="flex space-x-4">
-                    <button id="themeToggle" class="p-2 rounded-full bg-[#f8f4e9] text-[#5e503f] hover:bg-[#e0ddd5] transition">
+                    <button id="themeToggle" class="p-2 rounded-full bg-[#e8ecef] text-[#2a2a2a] hover:bg-[#d1d9de] transition">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button class="p-2 rounded-full bg-[#f8f4e9] text-[#5e503f] hover:bg-[#e0ddd5] transition">
+                    <button class="p-2 rounded-full bg-[#e8ecef] text-[#2a2a2a] hover:bg-[#d1d9de] transition">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -177,12 +155,12 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <main class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
             <!-- Sidebar -->
             <aside class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">🗓️ Time-Travel Through Words and Work</h2>
+                <div class="bg-white p-6 rounded-lg mb-6">
+                    <h2 class="text-lg font-serif font-light mb-4 text-[#2a2a2a]">🗓️ Time-Travel Through Words and Work</h2>
                     <div class="calendar-nav">
                         <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
                         <span id="currentMonthYear">June 2025</span>
@@ -192,29 +170,18 @@
                         <!-- Calendar will be generated by JavaScript -->
                     </div>
                 </div>
-                
-                <!-- <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">📖 A Chronicle of Thought and Creativity</h2>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-[#5e503f] transition">Journal Entries</a></li>
-                        <li><a href="#" class="hover:text-[#5e503f] transition">Creative Works</a></li>
-                        <li><a href="#" class="hover:text-[#5e503f] transition">Project Updates</a></li>
-                        <li><a href="#" class="hover:text-[#5e503f] transition">Poetry & Prose</a></li>
-                        <li><a href="#" class="hover:text-[#5e503f] transition">Travel Logs</a></li>
-                    </ul>
-                </div> -->
             </aside>
 
             <!-- Diary Content -->
             <div class="lg:col-span-3">
-                <div class="diary-paper rounded-lg mb-8 fade-in">
+                <div class="diary-paper mb-12 fade-in">
                     <div class="handwriting">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 id="entryDate" class="text-2xl font-serif font-bold text-[#5e503f]">Today's Entry</h2>
-                            <span id="entryDay" class="text-sm text-gray-600">Sunday</span>
+                            <h2 id="entryDate" class="text-xl font-serif font-light text-[#2a2a2a]">Today's Entry</h2>
+                            <span id="entryDay" class="text-sm text-[#4a4a4a]">Sunday</span>
                         </div>
                         <div id="diaryContent">
-                            <img src="https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg?w=2210&quality=50" alt="Sketch of mental blueprint" class="diary-image">
+                            <img src="https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg?w=2210&quality=50" alt="Nature Landscape" class="diary-image">
                             <p class="mb-4">Dear Diary,</p>
                             <p class="mb-4">Today marks the beginning of this digital journey. I've always believed that our thoughts, when captured authentically, can become the most valuable artifacts of our existence.</p>
                             <p class="mb-4">This space will serve as a repository for my musings, creations, and reflections. A place where the mundane and the profound can coexist, where ideas can breathe and evolve.</p>
@@ -224,49 +191,27 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">Featured Entries</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
-                            <h3 class="font-semibold">The Architecture of Thought</h3>
-                            <p class="text-sm text-gray-600">May 15, 2023</p>
-                        </div>
-                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
-                            <h3 class="font-semibold">Midnight Sketches</h3>
-                            <p class="text-sm text-gray-600">April 22, 2023</p>
-                        </div>
-                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
-                            <h3 class="font-semibold">Conversations with Silence</h3>
-                            <p class="text-sm text-gray-600">March 8, 2023</p>
-                        </div>
-                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
-                            <h3 class="font-semibold">The Alchemy of Ordinary Days</h3>
-                            <p class="text-sm text-gray-600">February 14, 2023</p>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#5e503f] text-[#f8f4e9] py-8 mt-12">
+    <footer class="bg-[#f5f6f5] text-[#2a2a2a] py-8 mt-12">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <p class="italic">"A diary is a mirror to the soul's seasons."</p>
-                    <p class="mt-2">— Uzzal Singha</p>
+                    <p class="text-sm text-[#4a4a4a]">"A diary is a mirror to the soul's seasons."</p>
+                    <p class="mt-2 text-sm">— Uzzal Singha</p>
                 </div>
                 <div class="flex space-x-6">
-                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="hover:text-[#5e503f] transition"><i class="fab fa-github"></i></a>
-                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="hover:text-[#005f73] transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-[#005f73] transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-[#005f73] transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-[#005f73] transition"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
-            <div class="mt-8 text-center text-sm">
-                <p>© 2025 UZZAL SINGHA. Design and Developed by KEHEM IT.</p>
+            <div class="mt-8 text-center text-sm text-[#4a4a4a]">
+                <p>© 2025 Uzzal Singha. Designed and Developed by KEHEM IT.</p>
             </div>
         </div>
     </footer>
@@ -275,12 +220,12 @@
         // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('bg-gray-900');
-            document.body.classList.toggle('text-white');
-            document.body.classList.toggle('bg-[#f8f4e9]');
-            document.body.classList.toggle('text-[#333]');
+            document.body.classList.toggle('bg-[#2a2a2a]');
+            document.body.classList.toggle('text-[#f5f6f5]');
+            document.body.classList.toggle('bg-[#f5f6f5]');
+            document.body.classList.toggle('text-[#2a2a2a]');
             
-            if (document.body.classList.contains('bg-gray-900')) {
+            if (document.body.classList.contains('bg-[#2a2a2a]')) {
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             } else {
                 themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
@@ -345,15 +290,10 @@
                 }
                 
                 dayCell.addEventListener('click', () => {
-                    // Remove selected class from all days
                     document.querySelectorAll('.calendar-day').forEach(day => {
                         day.classList.remove('selected');
                     });
-                    
-                    // Add selected class to clicked day
                     dayCell.classList.add('selected');
-                    
-                    // Update diary entry
                     updateDiaryEntry(day, month, year);
                 });
                 
@@ -369,7 +309,7 @@
             
             // Add fade effect
             diaryContent.classList.remove('fade-in');
-            void diaryContent.offsetWidth; // Trigger reflow
+            void diaryContent.offsetWidth;
             diaryContent.classList.add('fade-in');
             
             // Simulate different content for different dates
@@ -378,7 +318,7 @@
                     <img src="https://via.placeholder.com/400x200?text=Thought+Blueprint" alt="Sketch of mental blueprint" class="diary-image">
                     <p class="mb-4">Dear Diary,</p>
                     <p class="mb-4">Today I found myself contemplating the architecture of thought. How ideas build upon one another, how the mind constructs its own cathedrals from the raw materials of experience and imagination.</p>
-                    <p class="mb-4">There's something sacred about this process - the way fragments coalesce into something greater than their parts. I spent the afternoon sketching mental blueprints, tracing the contours of concepts not yet fully formed.</p>
+                    <p class="mb-4">There's something sacred about this process – how fragments coalesce into something greater than their parts. I spent the afternoon sketching mental blueprints, tracing the contours of concepts not yet fully formed.</p>
                     <p class="mb-4">Perhaps all creation begins this way: with the quiet laying of foundations, the patient work that happens before anything visible emerges.</p>
                     <p>— Uzzal</p>
                 `;
@@ -386,15 +326,15 @@
                 diaryContent.innerHTML = `
                     <img src="https://via.placeholder.com/400x300?text=Midnight+Sketch" alt="Abstract sketch" class="diary-image">
                     <p class="mb-4">Dear Diary,</p>
-                    <p class="mb-4">The night was restless, filled with half-formed images that demanded expression. I rose at 2 AM and filled three pages with rapid sketches - the language of my sleepless mind.</p>
-                    <p class="mb-4">There's a purity to these midnight creations. Unfiltered by daylight consciousness, they emerge raw and true. Some will become something more; others will remain as they are - artifacts of a particular moment's energy.</p>
+                    <p class="mb-4">The night was restless, filled with half-formed images that demanded expression. I rose at 2 AM and filled three pages with rapid sketches – the language of my sleepless mind.</p>
+                    <p class="mb-4">There's a purity in these midnight creations. Unfiltered by daylight consciousness, they emerge raw and true. Some will become something more; others will remain as they are – artifacts of a particular moment's energy.</p>
                     <p>— Uzzal</p>
                 `;
             } else if (day === 15 && month === 5 && year === 2025) {
                 diaryContent.innerHTML = `
-                    <img src="https://via.placeholder.com/400x250?text=Sunset+Capture" alt="Sunset photo" class="diary-image">
+                    <img src="https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg?w=2210&quality=50" alt="Nature Landscape" class="diary-image">
                     <p class="mb-4">Dear Diary,</p>
-                    <p class="mb-4">Today, the world felt alive with colors. I captured a moment during my evening walk - the sunset painting the sky in hues of orange and pink.</p>
+                    <p class="mb-4">Today, the world felt alive with colors. I captured a moment during my evening walk – the sunset painting the sky in hues of orange and pink.</p>
                     <p class="mb-4">Moments like these remind me to pause and breathe. The ordinary can be so breathtaking.</p>
                     <p>— Uzzal</p>
                 `;
