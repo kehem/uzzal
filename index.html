@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Living Diary of Uzzal Singha | DeepSite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Crimson Pro', serif;
+            background-color: #f8f4e9;
+            color: #333;
+        }
+        
+        .diary-paper {
+            background: 
+                linear-gradient(to bottom, #fffdf8, #fffdf8 28px, #e0ddd5 1px),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend mode="multiply" in2="SourceGraphic"/></filter><rect width="100%" height="100%" fill="#fffdf8" filter="url(%23noise)"/></svg>');
+            background-size: 100% 29px, auto;
+            background-blend-mode: overlay;
+            position: relative;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 0 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(200, 180, 150, 0.3);
+        }
+        
+        .diary-paper::before {
+            content: '';
+            position: absolute;
+            left: 45px;
+            height: 100%;
+            width: 1px;
+            background: rgba(200, 180, 150, 0.5);
+        }
+        
+        .handwriting {
+            font-family: 'Crimson Pro', serif;
+            line-height: 29px;
+        }
+        
+        .calendar-day {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background-color: #ffffff;
+            border: none;
+            color: #2d2d2d;
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover {
+            background-color: #e5e7eb;
+            transform: scale(1.05);
+        }
+        
+        .calendar-day.selected {
+            background-color: #1f2937;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+        
+        .calendar-header {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #1f2937;
+            padding: 10px 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background-color: #f3f4f6;
+            border-bottom: none;
+        }
+        
+        #calendar {
+            border: none;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        .calendar-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #1f2937;
+            transition: color 0.2s ease;
+        }
+        
+        .calendar-nav button:hover {
+            color: #3b82f6;
+        }
+        
+        .calendar-nav span {
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .calendar-nav span:hover {
+            background-color: #e5e7eb;
+            border-radius: 4px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .diary-paper::before {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-[#5e503f] text-[#f8f4e9] py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h1 class="text-3xl font-serif font-bold">The Living Diary of Uzzal Singha</h1>
+                    <p class="italic mt-1">Welcome to DeepSite, the personal publishing space of Uzzal Singha</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="themeToggle" class="p-2 rounded-full bg-[#f8f4e9] text-[#5e503f] hover:bg-[#e0ddd5] transition">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="p-2 rounded-full bg-[#f8f4e9] text-[#5e503f] hover:bg-[#e0ddd5] transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <aside class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">🗓️ Time-Travel Through Words and Work</h2>
+                    <div class="calendar-nav">
+                        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <span id="currentMonthYear">June 2025</span>
+                        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div id="calendar" class="grid grid-cols-7 text-center">
+                        <!-- Calendar will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">📖 A Chronicle of Thought and Creativity</h2>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-[#5e503f] transition">Journal Entries</a></li>
+                        <li><a href="#" class="hover:text-[#5e503f] transition">Creative Works</a></li>
+                        <li><a href="#" class="hover:text-[#5e503f] transition">Project Updates</a></li>
+                        <li><a href="#" class="hover:text-[#5e503f] transition">Poetry & Prose</a></li>
+                        <li><a href="#" class="hover:text-[#5e503f] transition">Travel Logs</a></li>
+                    </ul>
+                </div> -->
+            </aside>
+
+            <!-- Diary Content -->
+            <div class="lg:col-span-3">
+                <div class="diary-paper rounded-lg mb-8 fade-in">
+                    <div class="handwriting">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 id="entryDate" class="text-2xl font-serif font-bold text-[#5e503f]">Today's Entry</h2>
+                            <span id="entryDay" class="text-sm text-gray-600">Sunday</span>
+                        </div>
+                        <div id="diaryContent">
+                            <p class="mb-4">Dear Diary,</p>
+                            <p class="mb-4">Today marks the beginning of this digital journey. I've always believed that our thoughts, when captured authentically, can become the most valuable artifacts of our existence.</p>
+                            <p class="mb-4">This space will serve as a repository for my musings, creations, and reflections. A place where the mundane and the profound can coexist, where ideas can breathe and evolve.</p>
+                            <p class="mb-4">Already, I feel the weight of potential in this blank page. What will it hold in days to come? Sketches of dreams? Fragments of poetry? The quiet revelations that come in the stillness of night?</p>
+                            <p class="mb-4">Only time will tell. For now, I simply begin.</p>
+                            <p>— Uzzal</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-serif font-bold mb-4 text-[#5e503f]">Featured Entries</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
+                            <h3 class="font-semibold">The Architecture of Thought</h3>
+                            <p class="text-sm text-gray-600">May 15, 2023</p>
+                        </div>
+                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
+                            <h3 class="font-semibold">Midnight Sketches</h3>
+                            <p class="text-sm text-gray-600">April 22, 2023</p>
+                        </div>
+                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
+                            <h3 class="font-semibold">Conversations with Silence</h3>
+                            <p class="text-sm text-gray-600">March 8, 2023</p>
+                        </div>
+                        <div class="border-l-4 border-[#5e503f] pl-4 py-2 hover:bg-[#f8f4e9] transition cursor-pointer">
+                            <h3 class="font-semibold">The Alchemy of Ordinary Days</h3>
+                            <p class="text-sm text-gray-600">February 14, 2023</p>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#5e503f] text-[#f8f4e9] py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="italic">"A diary is a mirror to the soul's seasons."</p>
+                    <p class="mt-2">— Uzzal Singha</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-[#e0ddd5] transition"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                <p>© 2023 DeepSite. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+            document.body.classList.toggle('bg-[#f8f4e9]');
+            document.body.classList.toggle('text-[#333]');
+            
+            if (document.body.classList.contains('bg-gray-900')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Calendar functionality
+        const calendar = document.getElementById('calendar');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const currentMonthYear = document.getElementById('currentMonthYear');
+        const entryDate = document.getElementById('entryDate');
+        const entryDay = document.getElementById('entryDay');
+        const diaryContent = document.getElementById('diaryContent');
+
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Update month/year display
+        function updateMonthYearDisplay() {
+            currentMonthYear.textContent = `${months[currentMonth]} ${currentYear}`;
+        }
+
+        // Generate calendar
+        function generateCalendar(month, year) {
+            calendar.innerHTML = '';
+            
+            // Add day headers
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.textContent = day;
+                dayHeader.className = 'calendar-header text-sm';
+                calendar.appendChild(dayHeader);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'p-2';
+                calendar.appendChild(emptyCell);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.textContent = day;
+                dayCell.className = 'cursor-pointer calendar-day';
+                
+                // Highlight current day
+                if (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+                    dayCell.classList.add('selected');
+                }
+                
+                dayCell.addEventListener('click', () => {
+                    // Remove selected class from all days
+                    document.querySelectorAll('.calendar-day').forEach(day => {
+                        day.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked day
+                    dayCell.classList.add('selected');
+                    
+                    // Update diary entry
+                    updateDiaryEntry(day, month, year);
+                });
+                
+                calendar.appendChild(dayCell);
+            }
+        }
+
+        // Update diary entry based on selected date
+        function updateDiaryEntry(day, month, year) {
+            const date = new Date(year, month, day);
+            entryDate.textContent = `${months[month]} ${day}, ${year}`;
+            entryDay.textContent = days[date.getDay()];
+            
+            // Add fade effect
+            diaryContent.classList.remove('fade-in');
+            void diaryContent.offsetWidth; // Trigger reflow
+            diaryContent.classList.add('fade-in');
+            
+            // Simulate different content for different dates
+            if (day === 15 && month === 4) {
+                diaryContent.innerHTML = `
+                    <p class="mb-4">Dear Diary,</p>
+                    <p class="mb-4">Today I found myself contemplating the architecture of thought. How ideas build upon one another, how the mind constructs its own cathedrals from the raw materials of experience and imagination.</p>
+                    <p class="mb-4">There's something sacred about this process - the way fragments coalesce into something greater than their parts. I spent the afternoon sketching mental blueprints, tracing the contours of concepts not yet fully formed.</p>
+                    <p class="mb-4">Perhaps all creation begins this way: with the quiet laying of foundations, the patient work that happens before anything visible emerges.</p>
+                    <p>— Uzzal</p>
+                `;
+            } else if (day === 22 && month === 3) {
+                diaryContent.innerHTML = `
+                    <p class="mb-4">Dear Diary,</p>
+                    <p class="mb-4">The night was restless, filled with half-formed images that demanded expression. I rose at 2 AM and filled three pages with rapid sketches - the language of my sleepless mind.</p>
+                    <p class="mb-4">There's a purity to these midnight creations. Unfiltered by daylight consciousness, they emerge raw and true. Some will become something more; others will remain as they are - artifacts of a particular moment's energy.</p>
+                    <p class="mb-4">I've included one below:</p>
+                    <div class="my-4 p-4 border border-dashed border-gray-400 text-center italic text-gray-600">
+                        [Sketch of abstract shapes merging into a face]
+                    </div>
+                    <p>— Uzzal</p>
+                `;
+            } else {
+                // Default content for other dates
+                diaryContent.innerHTML = `
+                    <p class="mb-4">Dear Diary,</p>
+                    <p class="mb-4">Today was ${days[date.getDay()]}, the ${day}${getOrdinalSuffix(day)} of ${months[month]}. The details of this day are preserved here, in this digital parchment.</p>
+                    <p class="mb-4">What thoughts crossed my mind? What small epiphanies or quiet observations? The act of recording itself shapes the memory, gives form to what might otherwise dissolve into the stream of days.</p>
+                    <p class="mb-4">Even the ordinary deserves its place in this chronicle, for it is often in the ordinary that the extraordinary quietly roots itself.</p>
+                    <p>— Uzzal</p>
+                `;
+            }
+        }
+
+        // Helper function for ordinal suffixes
+        function getOrdinalSuffix(day) {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        }
+
+        // Initialize calendar
+        generateCalendar(currentMonth, currentYear);
+        updateMonthYearDisplay();
+
+        // Navigation button events
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar(currentMonth, currentYear);
+            updateMonthYearDisplay();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar(currentMonth, currentYear);
+            updateMonthYearDisplay();
+        });
+
+        // Simulate clicking on today's date
+        setTimeout(() => {
+            const todayCell = document.querySelector('.calendar-day.selected');
+            if (todayCell) {
+                todayCell.click();
+            }
+        }, 100);
+    </script>
+</body>
+</html>
