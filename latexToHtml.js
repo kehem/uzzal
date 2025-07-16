@@ -22,6 +22,7 @@ function parseLatexToHtml(latex) {
         let tableRows = [];
         let listItems = [];
         let titlePageContent = [];
+        let tableColumnCount = 0; // Track expected number of columns
 
         /**
          * Processes inline LaTeX commands (e.g., \textbf, \textit, \citep, math).
@@ -44,9 +45,9 @@ function parseLatexToHtml(latex) {
             // Handle \textsubscript{text}
             text = text.replace(/\\textsubscript\{([^}]+)\}/g, '<sub>$1</sub>');
             // Handle citations \cite{key}, \citep{key}
-            text = text.replace(/\\cite(p)?\{([^}]+)\}/g, '<a href="#$2" style="color: #0000FF;">[$2]</a>'); // hyperref blue links
+            text = text.replace(/\\cite(p)?\{([^}]+)\}/g, '<a href="#$2" style="color: #0000FF;">[$2]</a>');
             // Handle \url{address}
-            text = text.replace(/\\url\{([^}]+)\}/g, '<a href="$1" style="color: #000099;">$1</a>'); // hyperref urlcolor
+            text = text.replace(/\\url\{([^}]+)\}/g, '<a href="$1" style="color: #000099;">$1</a>');
             // Handle \href{url}{text}
             text = text.replace(/\\href\{([^}]+)\}\{([^}]+)\}/g, '<a href="$1" style="color: #000099;">$2</a>');
             // Handle basic inline math \( ... \) or $ ... $
@@ -59,7 +60,7 @@ function parseLatexToHtml(latex) {
             text = text.replace(/\\delta/g, 'δ');
             text = text.replace(/\\sum/g, '∑');
             text = text.replace(/\\int/g, '∫');
-            text = text.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)'); // Basic fraction rendering
+            text = text.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)');
             // Handle booktabs (no visual effect in HTML, but clean up)
             text = text.replace(/\\(toprule|midrule|bottomrule)/g, '');
             // Handle setspace (no direct HTML equivalent, ignored for preview)
@@ -71,47 +72,49 @@ function parseLatexToHtml(latex) {
             // Remove other LaTeX commands (basic cleanup)
             text = text.replace(/\\[a-zA-Z]+(\{[^}]*\})?/g, '');
             // Escape HTML characters to prevent injection
-            text = text.replace(/</g, '<').replace(/>/g, '>');
+            text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             return text.trim();
         }
 
         /**
-         * Renders a LaTeX table as an HTML table with booktabs styling.
-         * @param {string[][]} rows - Array of table rows, where each row is an array of cells.
-         * @returns {string} - The HTML table string.
+         * Parses a LaTeX table row into cells, handling escaped & and row termination.
+         * @param {string} line - The LaTeX table row.
+         * @returns {string[]|null} - Array of cell contents or null if not a valid row.
          */
-        function renderTable(rows) {
-            if (!rows.length) return '';
-            let tableHtml = '<table style="width: 100%; border-collapse: collapse; margin: 1rem 0;"><tbody>';
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                tableHtml += '<tr>';
-                for (const cell of row) {
-                    const tag = i === 0 ? 'th' : 'td';
-                    const style = i === 0 ? 'border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left; font-weight: bold; background-color: #f7fafc;' : 'border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left;';
-                    tableHtml += `<${tag} style="${style}">${cell || ' '}</${tag}>`;
-                }
-                tableHtml += '</tr>';
-            }
-            tableHtml += '</tbody></table>';
-            return tableHtml;
-        }
+        function parseTableRow(line) {
+            if (line.match(/^\\(hline|toprule|midrule|bottomrule|centering|\\)/)) return null;
+            if (!line.includes('&') && !line.endsWith('\\\\')) return null;
 
-        /**
-         * Renders a list (itemize or enumerate) as an HTML list.
-         * @param {string[]} items - Array of list items.
-         * @param {string} type - 'ul' for itemize, 'ol' for enumerate.
-         * @returns {string} - The HTML list string.
-         */
-        function renderList(items, type) {
-            if (!items.length) return '';
-            const listType = type === 'ul' ? 'ul' : 'ol';
-            let listHtml = `<${listType} style="margin-left: 2rem; margin-bottom: 1rem;">`;
-            for (const item of items) {
-                listHtml += `<li>${item}</li>`;
+            const cells = [];
+            let currentCell = '';
+            let inBraces = 0;
+            let i = 0;
+
+            while (i < line.length) {
+                const char = line[i];
+                if (char === '{' && (i === 0 || line[i - 1] !== '\\')) {
+                    inBraces++;
+                    currentCell += char;
+                } else if (char === '}' && (i === 0 || line[i - 1] !== '\\')) {
+                    inBraces--;
+                    currentCell += char;
+                } else if (char === '&' && inBraces === 0 && (i === 0 || line[i - 1] !== '\\')) {
+                    cells.push(processInlineCommands(currentCell.trim()));
+                    currentCell = '';
+                } else if (line.startsWith('\\\\', i) && inBraces === 0) {
+                    cells.push(processInlineCommands(currentCell.trim()));
+                    return cells;
+                } else {
+                    currentCell += char;
+                }
+                i++;
             }
-            listHtml += `</${listType}>`;
-            return listHtml;
+
+            // Handle case where row doesn't end with \\ but is last in table
+            if (currentCell.trim() && inBraces === 0) {
+                cells.push(processInlineCommands(currentCell.trim()));
+            }
+            return cells.length > 0 ? cells : null;
         }
 
         // Process each line of LaTeX
@@ -153,6 +156,7 @@ function parseLatexToHtml(latex) {
                     html += renderTable(tableRows);
                     inTable = false;
                     tableRows = [];
+                    tableColumnCount = 0;
                 }
                 if (inReferences) {
                     html += `</ul></div>`;
@@ -175,6 +179,7 @@ function parseLatexToHtml(latex) {
                     html += renderTable(tableRows);
                     inTable = false;
                     tableRows = [];
+                    tableColumnCount = 0;
                 }
                 if (inReferences) {
                     html += `</ul></div>`;
@@ -204,21 +209,29 @@ function parseLatexToHtml(latex) {
             else if (line.match(/^\\begin\{table\}/)) {
                 inTable = true;
                 tableRows = [];
+                tableColumnCount = 0;
             }
             else if (line.match(/^\\end\{table\}/)) {
                 inTable = false;
                 html += renderTable(tableRows);
                 tableRows = [];
+                tableColumnCount = 0;
             }
-            // Extract tabular environment
-            else if (line.match(/^\\begin\{tabular\}/)) {
+            // Extract tabular environment and column specification
+            else if (line.match(/^\\begin\{tabular\}\{([^{}]+)\}/)) {
                 inTable = true;
                 tableRows = [];
+                const cols = line.match(/^\\begin\{tabular\}\{([^{}]+)\}/)[1];
+                // Count columns (e.g., {lcr} -> 3 columns)
+                tableColumnCount = cols.replace(/[@{}]/g, '').length;
             }
             else if (line.match(/^\\end\{tabular\}/)) {
                 inTable = false;
-                html += renderTable(tableRows);
+                // Validate table rows
+                const validRows = tableRows.filter(row => row.length === tableColumnCount || tableColumnCount === 0);
+                html += renderTable(validRows);
                 tableRows = [];
+                tableColumnCount = 0;
             }
             // Extract itemize environment
             else if (line.match(/^\\begin\{itemize\}/)) {
@@ -269,9 +282,16 @@ function parseLatexToHtml(latex) {
                 if (itemText) listItems.push(itemText);
             }
             // Handle table rows
-            else if (inTable && !line.match(/^\\(hline|toprule|midrule|bottomrule|centering)/)) {
-                const cells = line.split('&').map(cell => processInlineCommands(cell.trim()));
-                tableRows.push(cells);
+            else if (inTable) {
+                const row = parseTableRow(line);
+                if (row) {
+                    // Pad or truncate row to match expected column count
+                    if (tableColumnCount > 0) {
+                        while (row.length < tableColumnCount) row.push('');
+                        if (row.length > tableColumnCount) row.length = tableColumnCount;
+                    }
+                    tableRows.push(row);
+                }
             }
             // Handle equation content
             else if (inEquation) {
@@ -293,7 +313,10 @@ function parseLatexToHtml(latex) {
         }
 
         // Close any open environments
-        if (inTable) html += renderTable(tableRows);
+        if (inTable) {
+            const validRows = tableRows.filter(row => row.length === tableColumnCount || tableColumnCount === 0);
+            html += renderTable(validRows);
+        }
         if (inReferences) html += `</ul></div>`;
         if (inSection) html += `</div>`;
         if (inItemize || inEnumerate) html += renderList(listItems, inItemize ? 'ul' : 'ol');
@@ -306,6 +329,45 @@ function parseLatexToHtml(latex) {
     } catch (error) {
         return `<p style="color: #e53e3e; text-align: center; font-size: 1rem; margin-top: 1rem;">Error parsing LaTeX: ${error.message}. Please copy the LaTeX code and compile it in <a href="https://www.overleaf.com" target="_blank" class="text-blue-600 hover:underline">Overleaf</a>.</p>`;
     }
+}
+
+/**
+ * Renders a LaTeX table as an HTML table with booktabs styling.
+ * @param {string[][]} rows - Array of table rows, where each row is an array of cells.
+ * @returns {string} - The HTML table string.
+ */
+function renderTable(rows) {
+    if (!rows.length) return '';
+    let tableHtml = '<table style="width: 100%; border-collapse: collapse; margin: 1rem 0;"><tbody>';
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        tableHtml += '<tr>';
+        for (const cell of row) {
+            const tag = i === 0 ? 'th' : 'td';
+            const style = i === 0 ? 'border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left; font-weight: bold; background-color: #f7fafc;' : 'border: 1px solid #e2e8f0; padding: 0.5rem; text-align: left;';
+            tableHtml += `<${tag} style="${style}">${cell || '&nbsp;'}</${tag}>`;
+        }
+        tableHtml += '</tr>';
+    }
+    tableHtml += '</tbody></table>';
+    return tableHtml;
+}
+
+/**
+ * Renders a list (itemize or enumerate) as an HTML list.
+ * @param {string[]} items - Array of list items.
+ * @param {string} type - 'ul' for itemize, 'ol' for enumerate.
+ * @returns {string} - The HTML list string.
+ */
+function renderList(items, type) {
+    if (!items.length) return '';
+    const listType = type === 'ul' ? 'ul' : 'ol';
+    let listHtml = `<${listType} style="margin-left: 2rem; margin-bottom: 1rem;">`;
+    for (const item of items) {
+        listHtml += `<li>${item}</li>`;
+    }
+    listHtml += `</${listType}>`;
+    return listHtml;
 }
 
 /**
