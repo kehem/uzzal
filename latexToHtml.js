@@ -378,7 +378,7 @@ function renderList(items, type) {
  */
 function applyPreviewStyles(html) {
     return `
-        <div style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; text-align: justify; max-width: 800px; margin: 0 auto; padding: 2rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-height: 600px; overflow-y: auto;">
+        <div style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; text-align: justify; margin: 0 auto; padding: 2rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-height: 600px; overflow-y: auto;">
             ${html}
         </div>
     `;
